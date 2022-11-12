@@ -1,94 +1,59 @@
 async function lockedProfile() {
-    let baseUrl = 'http://localhost:3030/jsonstore/advanced/profiles';
-    let main = document.querySelector("#main");
-    main.replaceChildren();
+    const main = document.getElementById('main');
+    main.addEventListener('click', onToggle);
 
-    try {
-        let response = await fetch(baseUrl);
-        if (!response.ok) {
-            throw new Error('Error');
-        }
-        let data = await response.json();
-        let id = 1;
+    const initialProfile = document.getElementsByClassName('profile')[0];
+    const url = "http://localhost:3030/jsonstore/advanced/profiles"
+    const response = await fetch(url)
+    const data = await response.json()
 
-        for (let info of Object.values(data)) {
-            let divProfile = htmlGenerator('div', '', main, 'profile');
-            let imgUserIcon = htmlGenerator('img', '', divProfile, 'userIcon');
-            imgUserIcon.setAttribute('src', './iconProfile2.png');
+    main.removeChild(initialProfile);
+
+    for (user in data){
+        const {_id, username, email, age} = data[user]
+        makeProfile(username, email, age)
+        
+    }
+
+    function onToggle(e) {
+        let change = e.target.parentElement.children[9].style
+        let unlocked = e.target.parentElement.children[4].checked
+        console.log(unlocked)
+        if (unlocked) {
+            if (e.target.innerHTML === "Show more" && e.target.tagName === "BUTTON"){
+                e.target.outerHTML = "<button>Hide it</button>"
+                change.display = "block"
             
-            htmlGenerator('label', 'Lock', divProfile);
-            let inputLock = htmlGenerator('input', '', divProfile, '', 'radio', `user${id}Locked`, 'lock');
-            inputLock.setAttribute('checked', 'checked');
-
-            htmlGenerator('label', 'Unlock', divProfile);
-            let inputUnlock = htmlGenerator('input', '', divProfile, '', 'radio', `user${id}Locked`, 'unlock');
-
-            htmlGenerator('br', '', divProfile);
-            htmlGenerator('hr', '', divProfile);
-
-            htmlGenerator('label', 'Username', divProfile);
-            let inputUsername = htmlGenerator('input', '', divProfile, '', 'text', `user${id}Username`, info.username);
-            inputUsername.disabled = true;
-            inputUsername.readonly = true;
-
-
-            let divUsername = htmlGenerator('div', '', divProfile);
-            divUsername.id = 'userHiddenFields';
-            divUsername.style.display = 'none';
-
-            htmlGenerator('hr', '', divUsername);
-
-            htmlGenerator('label', 'Email:', divUsername);
-            let inputEmail = htmlGenerator('input', '', divUsername, '', 'email', `user${id}Email`, info.email);
-            inputEmail.disabled = true;
-            inputEmail.readonly = true;
-
-            htmlGenerator('label', 'Age:', divUsername);
-            let inputAge = htmlGenerator('input', '', divUsername, '', 'email', `user${id}Age`, info.age);
-            inputAge.disabled = true;
-            inputAge.readonly = true;
-
-            id++;
-
-            let showMoreBtn = htmlGenerator('button', 'Show more', divProfile);
-            showMoreBtn.addEventListener('click', (e) => {
-                if (inputUnlock.checked && e.target.textContent === 'Show more') {
-                    divUsername.style.display = 'block';
-                    showMoreBtn.textContent = 'Hide it';
-                } else if (inputUnlock.checked && e.target.textContent === 'Hide it') {
-                    divUsername.style.display = 'none';
-                    showMoreBtn.textContent = 'Show more';
-                }
-            })
+            } else if (e.target.innerHTML === "Hide it" && e.target.tagName === "BUTTON") {
+                e.target.outerHTML = "<button>Show more</button>"
+                change.display = "none"
+            }
         }
-    } catch (error) {
-        console.error(error.message);
-    }
-}
-
-function htmlGenerator(tagName, text, parent, className, type, name, value) {
-    let el = document.createElement(tagName);
-    el.textContent = text;
-
-    if (parent) {
-        parent.appendChild(el);
     }
 
-    if (className) {
-        el.className = className;
-    }
 
-    if (type) {
-        el.type = type;
-    }
+    function makeProfile(username, email, age) {
+        let div = document.createElement('div')
+        div.classList.add('profile');
+        div.innerHTML = `        			
+        <img src="./iconProfile2.png" class="userIcon" />
+        <label>Lock</label>
+        <input type="radio" name="${username}Locked" value="lock" checked>
+        <label>Unlock</label>
+        <input type="radio" name="${username}Locked" value="unlock"><br>
+        <hr>
+        <label>Username</label>
+        <input type="text" name="${username}" value="${username}" disabled readonly />
+        <div class="${username}HiddenFields" style="display: none;">
+            <hr>
+            <label>Email:</label>
+            <input type="email" name="${email}" value="${email}" disabled readonly />
+            <label>Age:</label>
+            <input type="text" name="${age}" value="${age}" disabled readonly />
+        </div>
+        
+        <button>Show more</button>`
+    main.appendChild(div);
 
-    if (name) {
-        el.name = name;
     }
-
-    if (value) {
-        el.setAttribute('value', value);
-    }
-
-    return el;
 }
