@@ -8,11 +8,12 @@ async function lockedProfile() {
     const data = await response.json()
 
     main.removeChild(initialProfile);
-
+    let id = 1
     for (user in data){
+
         const {_id, username, email, age} = data[user]
-        makeProfile(username, email, age)
-        
+        makeProfile(username, email, age, id)
+        id++;
     }
 
     function onToggle(e) {
@@ -38,18 +39,18 @@ async function lockedProfile() {
         div.innerHTML = `        			
         <img src="./iconProfile2.png" class="userIcon" />
         <label>Lock</label>
-        <input type="radio" name="${username}Locked" value="lock" checked>
+        <input type="radio" name="user${id}Locked" value="lock" checked>
         <label>Unlock</label>
-        <input type="radio" name="${username}Locked" value="unlock"><br>
+        <input type="radio" name="user${id}Locked" value="unlock"><br>
         <hr>
         <label>Username</label>
-        <input type="text" name="${username}" value="${username}" disabled readonly />
+        <input type="text" name="user${id}Username" value="${username}" disabled readonly />
         <div class="${username}HiddenFields" style="display: none;">
             <hr>
             <label>Email:</label>
-            <input type="email" name="${email}" value="${email}" disabled readonly />
+            <input type="email" name="user${id}Email" value="${email}" disabled readonly />
             <label>Age:</label>
-            <input type="text" name="${age}" value="${age}" disabled readonly />
+            <input type="email" name="user${id}Age" value="${age}" disabled readonly />
         </div>
         
         <button>Show more</button>`
