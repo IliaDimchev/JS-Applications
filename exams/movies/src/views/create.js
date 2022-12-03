@@ -60,6 +60,6 @@ export async function showCreate(ctx) {
             img
         });
         form.reset();
-        ctx.page.redirect('/');
+        ctx.page.redirect('/home');
     }
 }

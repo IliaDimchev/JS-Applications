@@ -23,7 +23,7 @@ const editTemplate = (movie, onEdit) => html`
               class="form-control"
               placeholder="Movie Description..."
               name="description"
-            >${movie.title}</textarea>
+            >${movie.description}</textarea>
           </div>
           <div class="form-group">
             <label for="imageUrl">Image url</label>
@@ -32,7 +32,7 @@ const editTemplate = (movie, onEdit) => html`
               type="text"
               class="form-control"
               placeholder="Image Url"
-              .value="${movie.description}"
+              .value="${movie.img}"
               name="img"
             />
           </div>
@@ -59,6 +59,6 @@ export async function showEdit(ctx) {
             img
         }, id);
         form.reset();
-        ctx.page.redirect('/' + id)
+        ctx.page.redirect('/home/' + id)
     }
 }

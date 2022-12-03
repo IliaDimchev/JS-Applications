@@ -5,13 +5,13 @@ import { logout } from "../api/user.js";
 const nav = document.querySelector('nav')
 
 const navTemplate = (hasUser) => html`
-<a class="navbar-brand text-light" href="/">Movies</a>
+<a class="navbar-brand text-light" href="/home">Movies</a>
 <ul class="navbar-nav ml-auto">
     <li class="nav-item user">
-      ${hasUser ? html`Welcome, ${hasUser.email}` : nothing}</a>
+    <a class="nav-link" id="welcome-msg">${hasUser ? html`Welcome, ${hasUser.email}` : nothing}</a>
     </li>
     ${hasUser ? html`    
-    <a class="nav-link" id="welcome-msg">
+
     <li class="nav-item user">
         <a @click=${onLogout} class="nav-link" href="javascript:void(0)">Logout</a>
     </li>` : html`    <li class="nav-item guest">

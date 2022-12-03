@@ -1,7 +1,30 @@
 import { del, get, post, put } from "./api.js";
 
-export async function getAll() {
-    return get('/data/movies');
+
+const pageSize = 2
+const endpoints = {
+    "movies": '/data/movies?sortBy=_createdOn%20desc',
+    "byId": '/data/movies/'
+}
+
+export async function getAll(page, query) {
+    let dataUrl = endpoints.movies;
+    let sizeUrl = dataUrl;
+    dataUrl += `&pageSize=${pageSize}&offset=${(page - 1) * pageSize}`;
+    if (query) {
+        dataUrl += `&where=${encodeURIComponent(`title LIKE "${query}"`)}`;
+        sizeUrl += `&where=${encodeURIComponent(`title LIKE "${query}"`)}`;
+    }
+    sizeUrl += "&count"
+    const [data, size] = await Promise.all([
+        get(dataUrl),
+        get(sizeUrl)
+    ])
+
+    return {
+        data, 
+        pages: Math.ceil(size / pageSize)
+    };
 };
 
 export async function createMovie(movieData) {

@@ -47,6 +47,6 @@ export async function showLogin(ctx) {
 
         await login(email,password);
         ctx.updateNav();
-        ctx.page.redirect('/');
+        ctx.page.redirect('/home');
     }
 }

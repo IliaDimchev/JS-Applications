@@ -63,6 +63,6 @@ export async function showRegister(ctx) {
 
         await register(email,password);
         ctx.updateNav();
-        ctx.page.redirect('/');
+        ctx.page.redirect('/home');
     }
 }
