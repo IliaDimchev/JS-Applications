@@ -71,7 +71,11 @@ export async function showDetails(ctx) {
     }
 
     async function onDonate() {
-        await donate(id)
+        try {
+            await donate(id)
+        }   catch {
+            ctx.page.redirect('/login');
+        }
         ctx.page.redirect('/catalog/' + id);
     }
 }

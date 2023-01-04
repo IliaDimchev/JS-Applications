@@ -1,6 +1,7 @@
 {
-  "name": "orphelp",
+  "name": "music-library",
   "version": "1.0.0",
+  "description": "Music Library Single Page Application",
   "main": "index.html",
   "scripts": {
     "test": "mocha tests",
@@ -17,7 +18,5 @@
     "http-server": "^14.1.1",
     "mocha": "^10.1.0",
     "playwright-chromium": "1.9.2"
-  },
-  "keywords": [],
-  "description": ""
+  }
 }
