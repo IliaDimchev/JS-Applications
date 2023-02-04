@@ -1,0 +1,67 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.ssh.insert_key = false
+
+  config.vm.define "web" do |web|
+    web.vm.box="shekeriev/centos-stream-9"
+    web.vm.hostname = "web.do1.lab"
+    web.vm.network "private_network", ip: "192.168.89.100"
+    web.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
+    web.vm.synced_folder "vagrant/web/", "/vagrant"
+    web.vm.provision "shell", inline: <<EOS
+echo "* Add hosts ..."
+echo "192.168.89.100 web.do1.lab web" >> /etc/hosts
+echo "192.168.89.101 db.do1.lab db" >> /etc/hosts
+
+echo "* Install Software ..."
+dnf upgrade -y
+dnf install -y httpd php php-mysqlnd git
+
+echo "* Start HTTP ..."
+systemctl enable httpd
+systemctl start httpd
+
+echo "* Stop firewall ..."
+systemctl stop firewalld
+systemctl disable firewalld
+
+echo "* Copy web site files to /var/www/html/ ..."
+cp /vagrant/* /var/www/html
+
+echo "* Allow HTTPD to make netork connections ..."
+setsebool -P httpd_can_network_connect=1
+EOS
+  end
+
+  config.vm.define "db" do |db|
+    db.vm.box="shekeriev/centos-stream-9"
+    db.vm.hostname = "db.do1.lab"
+    db.vm.network "private_network", ip: "192.168.89.101"
+    db.vm.synced_folder "vagrant/db/", "/vagrant"
+    db.vm.provision "shell", inline: <<EOS
+echo "* Add hosts ..."
+echo "192.168.89.100 web.do1.lab web" >> /etc/hosts
+echo "192.168.89.101 db.do1.lab db" >> /etc/hosts
+
+echo "* Install Software ..."
+dnf upgrade -y
+dnf install -y mariadb mariadb-server
+
+echo "* Start HTTP ..."
+systemctl enable mariadb
+systemctl start mariadb
+
+echo "* Stop firewall ..."
+systemctl stop firewalld
+systemctl disable firewalld
+
+echo "* Create and load the database ..."
+mysql -u root < /vagrant/db_setup.sql
+EOS
+  end
+
+end
+ 
